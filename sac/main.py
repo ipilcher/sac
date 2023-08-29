@@ -8,11 +8,8 @@
 #       Copyright 2023 Ian Pilcher <arequipeno@gmail.com>
 #
 
-import ctypes
 import logging
-import os
 import signal
-import socket
 import sys
 import tomllib
 
