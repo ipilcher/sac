@@ -101,8 +101,11 @@ Edit the unit files, if necessary.
 ## Configuration
 
 The configuration file (`/etc/sac/sac.conf` by default) is a
-[TOML](https://toml.io/) document.  See the example file in this repository for
-details of the settings.  Note the following.
+[TOML](https://toml.io/) document.  See the
+[example configuration](https://github.com/ipilcher/sac/blob/main/sac.conf) in
+this repository for details of the settings.
+
+Note the following.
 
 * The configuration file is case sensitive.
 
