@@ -1,0 +1,13 @@
+[Unit]
+Description=Reload Asterisk configuration (for SAC)
+
+[Service]
+Type=oneshot
+PrivateTmp=true
+ExecStart=/usr/bin/cp /run/sac_ast_pjsip/pjsip.conf /etc/asterisk/pjsip.conf.new
+ExecStart=/usr/bin/chown --reference /etc/asterisk/pjsip.conf /etc/asterisk/pjsip.conf.new
+ExecStart=/usr/bin/chmod --reference /etc/asterisk/pjsip.conf /etc/asterisk/pjsip.conf.new
+ExecStart=/usr/bin/chcon --reference /etc/asterisk/pjsip.conf /etc/asterisk/pjsip.conf.new
+ExecStart=/usr/bin/mv /etc/asterisk/pjsip.conf.new /etc/asterisk/pjsip.conf
+ExecStart=/usr/bin/systemctl reload asterisk.service
+ExecStart=/usr/bin/rm -f /run/sac_ast_pjsip/pjsip_reload_needed

@@ -1,0 +1,15 @@
+[Unit]
+Description=Source Address Client (SAC)
+After=network-online.target
+
+[Service]
+Type=simple
+User=sac
+Group=sac
+PrivateTmp=true
+ExecStartPre=/usr/bin/cp /usr/bin/python3 /tmp/python.sac
+ExecStartPre=/usr/bin/chcon --reference /usr/local/bin/sacd /tmp/python.sac
+ExecStart=/tmp/python.sac /usr/local/bin/sacd
+
+[Install]
+WantedBy=multi-user.target

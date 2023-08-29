@@ -1,0 +1,8 @@
+[Unit]
+Description=Reload Asterisk configuration when SAC flag file is created
+
+[Path]
+PathExists=/run/sac_ast_pjsip/pjsip_reload_needed
+
+[Install]
+WantedBy=paths.target
