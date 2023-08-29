@@ -1,0 +1,115 @@
+# SPDX-License-Identifier:  GPL-3.0-or-later
+
+#
+#       SAC - Source Address Client
+#
+#       SELinux policy rules
+#
+#       Copyright 2023 Ian Pilcher <arequipeno@gmail.com>
+#
+
+policy_module(sac, 0)
+
+require {
+	type kernel_t;
+	type devlog_t;
+	type syslogd_var_run_t;
+	type user_devpts_t;
+	type net_conf_t;
+	type NetworkManager_var_run_t;
+	type node_t;
+	type asterisk_etc_t;
+	type bin_t;
+	type cert_t;
+	type proc_net_t;
+	type sysfs_t;
+	type proc_t;
+	type http_port_t;
+};
+
+type sac_t;
+type sac_exec_t;
+type sac_etc_t;
+type sac_ast_pjsip_t;
+type sac_port_t;
+
+init_daemon_domain(sac_t, sac_exec_t)
+files_type(sac_etc_t)
+files_type(sac_ast_pjsip_t)
+corenet_port(sac_port_t)
+
+# private copy of python3 (see sac.service)
+allow init_t sac_t: process2 { nosuid_transition };
+allow init_t sac_exec_t:file { unlink };
+
+# UNIX socket (for syslog & if_indextoname())
+allow sac_t self:unix_dgram_socket { create connect write ioctl };
+
+# log to syslog
+allow sac_t kernel_t:unix_dgram_socket { sendto };
+allow sac_t devlog_t:lnk_file { read };
+allow sac_t devlog_t:sock_file { write };
+allow sac_t syslogd_var_run_t:dir { search };
+
+# log to stderr
+allow sac_t user_devpts_t:chr_file { read write append ioctl getattr };
+
+# configuration directory
+allow sac_t sac_etc_t:dir { search };
+allow sac_t sac_etc_t:file { read open getattr map };
+
+# UDP sockets (DNS & multicast listener)
+allow sac_t self:udp_socket { create connect read getattr setopt bind };
+
+# rtnetlink socket
+allow sac_t self:netlink_route_socket
+	{ create bind getattr setopt read write nlmsg_read };
+
+# Multicast listener socket
+allow sac_t sac_port_t:udp_socket { name_bind };
+allow sac_t node_t:udp_socket { node_bind };
+
+bool sac_allow_pjsip false;
+if (sac_allow_pjsip) {
+
+	# pjsip.conf
+	allow sac_t asterisk_etc_t:dir { search };
+	allow sac_t asterisk_etc_t:file { read open getattr ioctl map };
+
+	# /run directory
+	allow sac_t sac_ast_pjsip_t:dir { search write remove_name add_name };
+	allow sac_t sac_ast_pjsip_t:file
+		{ unlink create write open read getattr ioctl };
+	allow init_t sac_ast_pjsip_t:file { read };
+}
+
+bool sac_allow_http false;
+if (sac_allow_http) {
+
+	# resolv.conf (may be a symlink)
+	allow sac_t net_conf_t:lnk_file { read };
+	allow sac_t NetworkManager_var_run_t:dir { search };
+	allow sac_t net_conf_t:file { getattr open read ioctl };
+
+	# DNS queries
+	allow sac_t self:udp_socket { write };
+
+	# CA certificates (for TLS connection to Hurricane Electric)
+	allow sac_t cert_t:dir { search getattr };
+	allow sac_t cert_t:file { read open getattr };
+	allow sac_t cert_t:lnk_file { read };
+
+	# TCP socket (Hurricane Electric DNS API)
+	allow sac_t self:tcp_socket
+		{ create bind setopt connect getopt getattr write read };
+	allow sac_t node_t:tcp_socket { node_bind };
+	allow sac_t http_port_t:tcp_socket { name_connect };
+}
+
+# Python libraries FTW!
+dontaudit sac_t bin_t:file { execute };
+dontaudit sac_t proc_net_t:lnk_file { read };
+dontaudit sac_t sysfs_t:file { read };
+dontaudit sac_t proc_t:file { read };
+dontaudit sac_t cert_t:dir { search };
+dontaudit sac_t self:tcp_socket { create };

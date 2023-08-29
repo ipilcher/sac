@@ -1,0 +1,14 @@
+#!/usr/bin/python3
+
+# SPDX-License-Identifier:  GPL-3.0-or-later
+
+#
+#       SAC - Source Address Client
+#
+#       "Executable"
+#
+#       Copyright 2023 Ian Pilcher <arequipeno@gmail.com>
+#
+
+from sac.main import main
+main()
