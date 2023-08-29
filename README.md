@@ -181,3 +181,16 @@ For the Asterisk PJSIP plugin:
 ```
 # setsebool -P sac_allow_pjsip on
 ```
+
+Start and enable the SAC service.
+
+```
+# systemctl enable sac.service --now
+```
+
+If using the Asterisk PJSIP plugin, enable the path unit, which reloads the
+Asterisk configuration when the plugin creates a "reload flag" file.
+
+```
+# systemctl enable asterisk-pjsip-reload.path --now
+```
