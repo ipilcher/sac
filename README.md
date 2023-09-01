@@ -30,6 +30,12 @@ Install the policy module.
 # semodule -i sac.pp
 ```
 
+Label the listener port.
+
+```
+# semanage port -a -t sac_port_t -p udp 4242
+```
+
 Create the `sac` user (and group).
 
 ```
