@@ -5,9 +5,10 @@
 #
 #       SELinux policy file contexts
 #
-#       Copyright 2023 Ian Pilcher <arequipeno@gmail.com>
+#       Copyright 2023, 2025 Ian Pilcher <arequipeno@gmail.com>
 #
 
 /usr/(local/)?bin/sacd		--	gen_context(system_u:object_r:sac_exec_t, s0)
 /etc/sac(/.*)?				gen_context(system_u:object_r:sac_etc_t, s0)
 /var/run/sac_ast_pjsip(/.*)?		gen_context(system_u:object_r:sac_ast_pjsip_t, s0)
+/run/sac_ast_pjsip(/.*)?		gen_context(system_u:object_r:sac_ast_pjsip_t, s0)
